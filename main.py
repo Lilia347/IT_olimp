@@ -11,18 +11,25 @@ with open("results.txt") as texter:
     bk = list(map(lambda x: x.strip("\n"), texter.readlines()))
     b = {}
     for i in bk:
-        s, k = i.split()[0], list(map(int, i.split()[1:]))
+        if i == "":
+            break
+        for n, j in enumerate(i.split()):
+            if j.isdigit() or j == "-1" and n != 0:
+                break
+        s, k = " ".join(i.split()[:n]), list(map(int, i.split()[n:]))
         cs = {}
         for j in range(1, 25):
             cs[j] = k[j-1]
         b[s] = cs
-
+    
 with open("users.txt") as texter:
     bk = list(map(lambda x: x.strip("\n"), texter.readlines()))
-    
+
     for i in bk:
+        if i == "":
+            break
         i = i.split()
-        a[i[0]] = i[1]
+        a[" ".join(i[:-1])] = i[-1]
 
 
 @app.route('/')
@@ -55,6 +62,7 @@ def login():
                 b[username1] = {}
                 for i in range(1, 25):
                     b[username1][i] = -1
+                print(b)
                 with open("results.txt", 'w') as f:
                     for i in b.items():
                         s, k = i[0], i[1]
@@ -162,6 +170,7 @@ def main(username):
                 f.write(s + " " + st)
                 f.write('\n')
     results = b[username]
-    return render_template("ez.html", results=results)
+    results[-1] = username
+    return render_template("ez_1.html", results=results)
 
 app.run()
